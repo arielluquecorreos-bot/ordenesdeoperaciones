@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1a3a5c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="G.O.J.">
+<title>Gestión de Órdenes Judiciales</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f4f8;color:#1a202c;overscroll-behavior:none;}
+
+/* LOGIN */
+.login-bg{position:fixed;inset:0;background:linear-gradient(145deg,#0f2744 0%,#1a3a5c 50%,#1a56a0 100%);display:flex;align-items:center;justify-content:center;padding:20px;z-index:1000;}
+.login-box{background:white;border-radius:20px;padding:32px 24px;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
+.login-logo{text-align:center;margin-bottom:24px;}
+.logo-escudo{width:72px;height:72px;margin:0 auto 12px;background:linear-gradient(135deg,#1a3a5c,#1a56a0);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:36px;box-shadow:0 4px 16px rgba(26,86,160,0.3);}
+.login-logo h1{font-size:15px;font-weight:700;color:#1a3a5c;letter-spacing:0.3px;}
+.login-logo p{font-size:12px;color:#718096;margin-top:2px;}
+.login-field{margin-bottom:14px;}
+.login-field label{display:block;font-size:11px;color:#718096;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;}
+.login-field input{width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:16px;color:#1a202c;outline:none;font-family:inherit;}
+.login-field input:focus{border-color:#1a56a0;}
+.btn-login{width:100%;padding:14px;background:linear-gradient(135deg,#1a3a5c,#1a56a0);color:white;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;margin-top:4px;}
+.btn-login:active{opacity:0.9;}
+.login-error{display:none;background:#fff5f5;color:#c53030;border:1px solid #feb2b2;border-radius:8px;padding:10px 12px;font-size:13px;margin-top:12px;text-align:center;}
+.login-whatsapp{text-align:center;margin-top:16px;font-size:13px;color:#718096;}
+.login-whatsapp a{color:#1a56a0;font-weight:600;text-decoration:none;}
+
+/* HEADER */
+.header{background:linear-gradient(135deg,#1a3a5c,#1a56a0);color:white;padding:14px 16px 12px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+.header-left{display:flex;align-items:center;gap:10px;}
+.header-logo{width:32px;height:32px;background:rgba(255,255,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.header h1{font-size:15px;font-weight:600;}
+.header p{font-size:11px;opacity:0.8;margin-top:1px;}
+.header-right{display:flex;gap:6px;}
+.btn-header{background:rgba(255,255,255,0.15);border:none;border-radius:8px;width:34px;height:34px;font-size:16px;cursor:pointer;color:white;display:flex;align-items:center;justify-content:center;}
+
+/* NAV */
+.nav{display:flex;background:white;border-bottom:1px solid #e2e8f0;position:sticky;top:61px;z-index:40;}
+.nav button{flex:1;padding:10px 4px 8px;font-size:11px;border:none;background:transparent;color:#718096;cursor:pointer;border-bottom:3px solid transparent;display:flex;flex-direction:column;align-items:center;gap:3px;transition:all 0.15s;}
+.nav button .ico{font-size:18px;}
+.nav button.active{color:#1a56a0;border-bottom-color:#1a56a0;font-weight:600;}
+.nav-admin{display:none;}
+
+/* SCREENS */
+.screen{display:none;padding:14px;padding-bottom:24px;min-height:calc(100vh - 120px);}
+.screen.active{display:block;}
+
+/* FILTROS */
+.filtros-box{background:white;border-radius:12px;padding:12px 14px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);}
+.filtros-row{display:flex;gap:8px;margin-bottom:8px;}
+.filtros-row:last-child{margin-bottom:0;}
+.filtros-box select,.filtros-box input{flex:1;padding:9px 10px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;background:white;color:#1a202c;outline:none;appearance:none;-webkit-appearance:none;font-family:inherit;}
+.filtros-box select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23718096' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:26px;}
+.filtros-box select:focus,.filtros-box input:focus{border-color:#1a56a0;}
+.btn-limpiar{width:100%;padding:8px;background:#f0f4f8;border:none;border-radius:8px;font-size:12px;color:#718096;cursor:pointer;margin-top:6px;font-family:inherit;}
+
+/* CARDS */
+.results-count{font-size:12px;color:#718096;margin-bottom:10px;padding-left:2px;}
+.orden-card{background:white;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.08);cursor:pointer;border-left:4px solid #1a56a0;}
+.orden-card:active{transform:scale(0.99);}
+.orden-card.con-foto{background:#f0fdf4;border-left-color:#1d9e75;}
+.orden-card.con-foto .orden-nro{color:#1d9e75;}
+.orden-card.entregada{background:#eff6ff;border-left-color:#3b82f6;}
+.orden-card.entregada .orden-nro{color:#1d4ed8;}
+.orden-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.orden-nro{font-size:15px;font-weight:700;color:#1a56a0;}
+.badge{font-size:11px;padding:3px 8px;border-radius:20px;background:#ebf4ff;color:#1a56a0;font-weight:600;}
+.orden-imputado{font-size:14px;color:#2d3748;font-weight:500;margin-bottom:3px;}
+.orden-meta{font-size:12px;color:#718096;}
+.orden-obs{font-size:12px;color:#718096;margin-top:5px;border-top:1px solid #f0f4f8;padding-top:5px;}
+.foto-badge{display:inline-block;background:#dcfce7;color:#166534;font-size:11px;font-weight:600;padding:2px 7px;border-radius:20px;margin-top:4px;}
+.entrega-badge{display:inline-block;background:#dbeafe;color:#1e40af;font-size:11px;font-weight:600;padding:2px 7px;border-radius:20px;margin-top:4px;}
+.empty{text-align:center;padding:48px 20px;color:#a0aec0;}
+.empty .ico{font-size:48px;display:block;margin-bottom:12px;}
+
+/* MODAL DETALLE */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;justify-content:flex-end;flex-direction:column;}
+.modal-overlay.open{display:flex;}
+.modal-sheet{background:white;border-radius:20px 20px 0 0;max-height:85vh;overflow-y:auto;padding:0 0 32px;animation:slideup 0.25s ease;}
+@keyframes slideup{from{transform:translateY(60px);opacity:0;}to{transform:none;opacity:1;}}
+.modal-handle{width:40px;height:4px;background:#e2e8f0;border-radius:2px;margin:12px auto 16px;}
+.modal-header{display:flex;justify-content:space-between;align-items:center;padding:0 16px 12px;border-bottom:1px solid #f0f4f8;}
+.modal-title{font-size:16px;font-weight:700;color:#1a56a0;}
+.modal-close{border:none;background:#f0f4f8;border-radius:50%;width:30px;height:30px;font-size:16px;cursor:pointer;color:#718096;}
+.modal-body{padding:12px 16px;}
+.detail-row{display:flex;padding:10px 0;border-bottom:1px solid #f0f4f8;}
+.detail-row:last-of-type{border-bottom:none;}
+.detail-label{font-size:12px;color:#718096;font-weight:600;width:110px;flex-shrink:0;}
+.detail-value{font-size:14px;color:#2d3748;flex:1;}
+
+/* ADMIN */
+.card{background:white;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);}
+.section-title{font-size:12px;font-weight:700;color:#4a5568;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:12px;}
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:11px;color:#718096;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;}
+.field input,.field select{width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:15px;background:white;color:#1a202c;outline:none;appearance:none;-webkit-appearance:none;font-family:inherit;}
+.field input:focus,.field select:focus{border-color:#1a56a0;}
+.btn-primary{width:100%;padding:13px;background:linear-gradient(135deg,#1a3a5c,#1a56a0);color:white;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;}
+.btn-primary:active{opacity:0.9;}
+.usuario-card{background:white;border-radius:10px;padding:12px 14px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,0.08);border-left:3px solid #1a56a0;}
+.usuario-card.vencido{border-left-color:#e53e3e;background:#fff5f5;}
+.usuario-card.inactivo{border-left-color:#a0aec0;background:#f7fafc;}
+.usuario-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.usuario-email{font-size:14px;font-weight:600;color:#2d3748;}
+.usuario-estado{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;}
+.estado-activo{background:#dcfce7;color:#166534;}
+.estado-vencido{background:#fee2e2;color:#c53030;}
+.estado-inactivo{background:#e2e8f0;color:#4a5568;}
+.usuario-info{font-size:12px;color:#718096;}
+.usuario-codigo{font-size:13px;font-weight:700;color:#1a56a0;margin-top:2px;}
+.btn-baja{padding:5px 10px;background:transparent;border:1px solid #e53e3e;color:#e53e3e;border-radius:6px;font-size:12px;cursor:pointer;}
+.btn-renovar{padding:5px 10px;background:transparent;border:1px solid #1a56a0;color:#1a56a0;border-radius:6px;font-size:12px;cursor:pointer;margin-right:6px;}
+
+/* TOAST */
+.toast{display:none;background:#1d9e75;color:white;padding:12px 16px;border-radius:10px;text-align:center;font-size:14px;font-weight:500;margin-bottom:16px;}
+.toast.show{display:block;animation:fadein 0.2s ease;}
+@keyframes fadein{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.stat-box{background:white;border-radius:12px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,0.08);}
+.stat-label{font-size:11px;color:#718096;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+.stat-val{font-size:28px;font-weight:700;color:#1a56a0;}
+.mes-bar{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.mes-nombre{font-size:12px;color:#718096;width:90px;flex-shrink:0;}
+.bar-track{flex:1;height:18px;background:#ebf4ff;border-radius:4px;overflow:hidden;}
+.bar-fill{height:100%;background:linear-gradient(90deg,#1a3a5c,#1a56a0);border-radius:4px;}
+.bar-count{font-size:12px;font-weight:600;color:#2d3748;width:20px;text-align:right;}
+
+/* NUEVA/EDITAR - solo admin */
+.field input[type="date"]{padding:11px 14px;}
+.btn-edit{width:100%;padding:11px;background:#ebf4ff;border:1.5px solid #1a56a0;color:#1a56a0;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-top:12px;}
+.btn-delete{width:100%;padding:11px;background:white;border:1.5px solid #fc8181;color:#c53030;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-top:8px;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-bg" id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="logo-escudo">⚖️</div>
+      <h1>GESTIÓN DE ÓRDENES</h1>
+      <p>Sistema de control operacional</p>
+    </div>
+    <div class="field">
+      <label>Correo electrónico</label>
+      <input type="email" id="login-email" placeholder="tucorreo@gmail.com" inputmode="email" autocomplete="email">
+    </div>
+    <div class="field">
+      <label>Código de acceso</label>
+      <input type="text" id="login-codigo" placeholder="Código de 8 caracteres" maxlength="20">
+    </div>
+    <button class="btn-login" onclick="iniciarSesion()">Ingresar</button>
+    <div class="login-error" id="login-error">Correo o código incorrecto. Solicitá acceso al administrador.</div>
+    <div class="login-whatsapp">
+      ¿No tenés acceso? <a href="https://wa.me/3492322020?text=Hola%2C%20solicito%20acceso%20al%20sistema%20de%20Gestión%20de%20Órdenes" target="_blank">Solicitarlo por WhatsApp</a>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none;">
+  <div class="header">
+    <div class="header-left">
+      <div class="header-logo">⚖️</div>
+      <div>
+        <h1>Gestión de Órdenes</h1>
+        <p id="header-count">Cargando...</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="btn-header" id="btn-sync" onclick="sincronizarSheets()" title="Sincronizar">🔄</button>
+      <button class="btn-header" onclick="cerrarSesion()" title="Salir">🚪</button>
+    </div>
+  </div>
+
+  <nav class="nav" id="nav-bar">
+    <button class="active" onclick="showScreen('lista')">
+      <span class="ico">📋</span>Órdenes
+    </button>
+    <button onclick="showScreen('stats')">
+      <span class="ico">📊</span>Resumen
+    </button>
+    <button class="nav-admin" id="btn-nav-nueva" onclick="showScreen('nueva')">
+      <span class="ico">➕</span>Nueva
+    </button>
+    <button class="nav-admin" id="btn-nav-usuarios" onclick="showScreen('usuarios')">
+      <span class="ico">👥</span>Usuarios
+    </button>
+  </nav>
+
+  <!-- LISTA -->
+  <div id="screen-lista" class="screen active">
+    <div id="toast-ok" class="toast">✅ Listo</div>
+    <div class="filtros-box">
+      <div class="filtros-row">
+        <select id="filtro-quincena" onchange="renderLista()">
+          <option value="">Quincena: todas</option>
+          <option value="1ra">1ra quincena</option>
+          <option value="2da">2da quincena</option>
+        </select>
+        <select id="filtro-mes" onchange="renderLista()">
+          <option value="">Mes: todos</option>
+          <option>ENERO</option><option>FEBRERO</option><option>MARZO</option><option>ABRIL</option>
+          <option>MAYO</option><option>JUNIO</option><option>JULIO</option><option>AGOSTO</option>
+          <option>SEPTIEMBRE</option><option>OCTUBRE</option><option>NOVIEMBRE</option><option>DICIEMBRE</option>
+        </select>
+      </div>
+      <div class="filtros-row">
+        <input type="text" id="filtro-imputado" placeholder="🔍 Imputado..." oninput="renderLista()">
+        <input type="text" id="filtro-nro" placeholder="🔍 N° orden..." oninput="renderLista()" inputmode="numeric">
+      </div>
+      <div class="filtros-row">
+        <input type="text" id="filtro-fecha" placeholder="📅 Fecha..." oninput="renderLista()">
+      </div>
+      <div class="filtros-row">
+        <input type="text" id="filtro-obs" placeholder="🔍 Observaciones..." oninput="renderLista()">
+      </div>
+      <button class="btn-limpiar" onclick="limpiarFiltros()">✕ Limpiar filtros</button>
+    </div>
+    <p class="results-count" id="results-count"></p>
+    <div id="lista-container"></div>
+  </div>
+
+  <!-- STATS -->
+  <div id="screen-stats" class="screen">
+    <div class="stats-grid" id="stats-grid"></div>
+    <div class="card">
+      <p class="section-title">Órdenes por mes</p>
+      <div id="stats-meses"></div>
+    </div>
+    <div class="card" style="margin-top:0;">
+      <button onclick="limpiarListaNegra()" style="width:100%;padding:10px;background:#f0f4f8;border:none;border-radius:8px;font-size:13px;color:#718096;cursor:pointer;">🔄 Restablecer órdenes ocultas</button>
+    </div>
+  </div>
+
+  <!-- NUEVA ORDEN (solo admin) -->
+  <div id="screen-nueva" class="screen">
+    <div class="card">
+      <p class="section-title">Nueva orden</p>
+      <div class="field"><label>N° de orden *</label><input type="text" id="f-nro" placeholder="Ej: 128" inputmode="numeric"></div>
+      <div class="field"><label>Mes *</label>
+        <select id="f-mes">
+          <option value="">— Seleccioná —</option>
+          <option>ENERO</option><option>FEBRERO</option><option>MARZO</option><option>ABRIL</option>
+          <option>MAYO</option><option>JUNIO</option><option>JULIO</option><option>AGOSTO</option>
+          <option>SEPTIEMBRE</option><option>OCTUBRE</option><option>NOVIEMBRE</option><option>DICIEMBRE</option>
+        </select>
+      </div>
+      <div class="field"><label>Fechas a realizar</label><input type="text" id="f-fechas" placeholder="Ej: 10/07 al 20/07"></div>
+      <div class="field"><label>Quincena</label>
+        <select id="f-quincena"><option value="">— Seleccioná —</option><option value="1ra">1ra quincena</option><option value="2da">2da quincena</option></select>
+      </div>
+      <div class="field"><label>Imputado</label><input type="text" id="f-imputado" placeholder="Nombre o código"></div>
+      <div class="field"><label>Observaciones / Resolución</label><textarea id="f-obs" style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:15px;min-height:80px;resize:vertical;font-family:inherit;outline:none;" placeholder="Descripción..."></textarea></div>
+      <div class="field"><label>Foto enviada</label><input type="text" id="f-foto" placeholder="Fecha (Ej: 16/07/2026)"></div>
+      <div class="field"><label>Fecha de entrega</label><input type="text" id="f-entrega" placeholder="Fecha (Ej: 17/07/2026)"></div>
+      <button class="btn-primary" onclick="guardarOrden()">💾 Guardar orden</button>
+    </div>
+  </div>
+
+  <!-- USUARIOS (solo admin) -->
+  <div id="screen-usuarios" class="screen">
+    <div class="card">
+      <p class="section-title">Agregar usuario</p>
+      <div class="field"><label>Correo electrónico</label><input type="email" id="u-email" placeholder="usuario@gmail.com"></div>
+      <div class="field"><label>Nombre</label><input type="text" id="u-nombre" placeholder="Nombre y apellido"></div>
+      <button class="btn-primary" onclick="agregarUsuario()">➕ Generar acceso (30 días)</button>
+    </div>
+    <div id="lista-usuarios"></div>
+  </div>
+</div>
+
+<!-- MODAL DETALLE -->
+<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title" id="modal-titulo">Detalle</span>
+      <button class="modal-close" onclick="cerrarModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+// ─── CONFIG ──────────────────────────────────────────────
+const URL_GOOGLE = "https://script.google.com/macros/s/AKfycbzMpmwCC1bPSqgP-TdyxJDnnf0T5fVU98zPVku6baKHtrToVn1Z1GnSWqTRVOQSxq3buQ/exec";
+const ADMIN_EMAIL = "ariel.luquecorreos@gmail.com";
+const ADMIN_PASS  = "ARIEL_ADMIN_2026"; // código especial admin
+
+// ─── SESSION ─────────────────────────────────────────────
+const SESSION_KEY = 'goj_session';
+let esAdmin = false;
+let usuarioActual = null;
+
+function getSession(){ try{ return JSON.parse(localStorage.getItem(SESSION_KEY)||'null'); }catch(e){ return null; } }
+function saveSession(s){ localStorage.setItem(SESSION_KEY, JSON.stringify(s)); }
+function clearSession(){ localStorage.removeItem(SESSION_KEY); }
+
+// ─── LOGIN ───────────────────────────────────────────────
+async function iniciarSesion() {
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const codigo = document.getElementById('login-codigo').value.trim();
+  if(!email || !codigo){ mostrarErrorLogin('Completá todos los campos.'); return; }
+
+  // Admin directo
+  if(email === ADMIN_EMAIL.toLowerCase() && codigo === ADMIN_PASS){
+    saveSession({email, esAdmin:true, nombre:'Administrador'});
+    abrirApp(true);
+    return;
+  }
+
+  // Verificar en Sheets
+  try {
+    const r = await fetch(URL_GOOGLE+'?action=login&email='+encodeURIComponent(email)+'&codigo='+encodeURIComponent(codigo));
+    const res = await r.json();
+    if(res.ok){
+      saveSession({email, esAdmin:false, nombre:res.nombre});
+      abrirApp(false);
+    } else {
+      mostrarErrorLogin(res.msg || 'Correo o código incorrecto.');
+    }
+  } catch(e){
+    mostrarErrorLogin('Sin conexión. Verificá tu internet.');
+  }
+}
+
+function mostrarErrorLogin(msg){
+  const el = document.getElementById('login-error');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function abrirApp(admin){
+  esAdmin = admin;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  // Mostrar pestañas admin
+  if(admin){
+    document.querySelectorAll('.nav-admin').forEach(el=>el.style.display='flex');
+  }
+  sincronizarSheets();
+  if(admin) cargarUsuarios();
+}
+
+function cerrarSesion(){
+  if(!confirm('¿Cerrar sesión?')) return;
+  clearSession();
+  location.reload();
+}
+
+// ─── INIT ────────────────────────────────────────────────
+window.addEventListener('load', ()=>{
+  const session = getSession();
+  if(session){
+    esAdmin = session.esAdmin;
+    usuarioActual = session;
+    abrirApp(session.esAdmin);
+  }
+});
+
+// ─── HELPERS ─────────────────────────────────────────────
+function claveOrden(o){ return String(o.nro)+'|'+(o.mes||'')+'|'+(o.quincena||''); }
+
+function formatearFecha(val){
+  if(!val && val!==0) return '';
+  const s=String(val).trim();
+  if(!s||s==='undefined'||s==='null') return '';
+  if(/^\d{1,2}\/\d{1,2}/.test(s)) return s;
+  if(/^\d{1,2}$/.test(s)) return s;
+  if(/^\d{5,6}$/.test(s)&&parseInt(s)>40000){
+    const e=new Date(1899,11,30); e.setDate(e.getDate()+parseInt(s));
+    return String(e.getDate()).padStart(2,'0')+'/'+String(e.getMonth()+1).padStart(2,'0')+'/'+e.getFullYear();
+  }
+  try{ const d=new Date(val); if(!isNaN(d.getTime())) return String(d.getUTCDate()).padStart(2,'0')+'/'+String(d.getUTCMonth()+1).padStart(2,'0')+'/'+d.getUTCFullYear(); }catch(e){}
+  return s;
+}
+
+// ─── DATA LOCAL ──────────────────────────────────────────
+const KEY='ops_control_2026';
+const DELETED_KEY='ops_deleted_claves';
+function getData(){ try{ return JSON.parse(localStorage.getItem(KEY)||'[]'); }catch(e){ return []; } }
+function saveData(d){ localStorage.setItem(KEY,JSON.stringify(d)); }
+function getDeleted(){ try{ return JSON.parse(localStorage.getItem(DELETED_KEY)||'[]'); }catch(e){ return []; } }
+function addDeleted(c){ const d=getDeleted(); if(!d.includes(c)){ d.push(c); localStorage.setItem(DELETED_KEY,JSON.stringify(d)); } }
+
+function limpiarListaNegra(){
+  localStorage.removeItem(DELETED_KEY);
+  mostrarToast('✅ Restablecido. Sincronizando...','#1d9e75');
+  setTimeout(sincronizarSheets,500);
+}
+
+function updateHeaderCount(){
+  const n=getData().length;
+  document.getElementById('header-count').textContent=n+' orden'+(n!==1?'es':'')+' registrada'+(n!==1?'s':'');
+}
+
+function mostrarToast(msg,color){
+  const t=document.getElementById('toast-ok');
+  t.style.background=color||'#1d9e75'; t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>{ t.classList.remove('show'); t.style.background=''; },3000);
+}
+
+// ─── SINCRONIZAR ─────────────────────────────────────────
+function sincronizarSheets(){
+  const btn=document.getElementById('btn-sync');
+  if(btn){ btn.textContent='⏳'; btn.disabled=true; }
+  fetch(URL_GOOGLE+'?t='+Date.now())
+    .then(r=>{ if(!r.ok) throw new Error(); return r.json(); })
+    .then(filas=>{
+      if(!Array.isArray(filas)||filas.length===0){ mostrarToast('⚠️ Sin datos','#d97706'); return; }
+      const deleted=getDeleted();
+      const locales=getData();
+      const localMap={};
+      locales.forEach(o=>{ localMap[claveOrden(o)]=o; });
+      const deSheets=filas
+        .filter(f=>f.nro!==''&&f.nro!==undefined&&f.nro!==null)
+        .map(f=>{
+          const clave=String(f.nro)+'|'+String(f.mes||'').toUpperCase()+'|'+String(f.quincena||'');
+          if(deleted.includes(clave)) return null;
+          const local=localMap[clave];
+          return {
+            id:local?.id||(Date.now()+Math.random()),
+            nro:String(f.nro||''), mes:String(f.mes||'').toUpperCase(),
+            fechas:local?._editado?local.fechas:formatearFecha(f.fechas),
+            quincena:String(f.quincena||''),
+            imputado:local?._editado?local.imputado:String(f.imputado||''),
+            obs:local?._editado?local.obs:String(f.obs||''),
+            foto:local?._editado?local.foto:formatearFecha(f.foto),
+            entrega:local?._editado?local.entrega:formatearFecha(f.entrega),
+            fecha_registro:String(f.fecha_registro||''),
+            _editado:local?._editado||false,
+          };
+        }).filter(Boolean);
+      const clavesSheets=new Set(deSheets.map(claveOrden));
+      const soloLocales=locales.filter(o=>!clavesSheets.has(claveOrden(o))&&!deleted.includes(claveOrden(o)));
+      saveData([...deSheets,...soloLocales]);
+      updateHeaderCount();
+      mostrarToast('✅ '+deSheets.length+' órdenes · '+soloLocales.length+' locales','#1d9e75');
+      if(document.getElementById('screen-lista').classList.contains('active')) renderLista();
+      if(document.getElementById('screen-stats').classList.contains('active')) renderStats();
+    })
+    .catch(()=>mostrarToast('❌ Sin conexión','#c53030'))
+    .finally(()=>{ if(btn){ btn.textContent='🔄'; btn.disabled=false; } });
+}
+
+// ─── PANTALLAS ───────────────────────────────────────────
+function showScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  const tabs=['lista','stats','nueva','usuarios'];
+  const idx=tabs.indexOf(name);
+  document.querySelectorAll('.nav button')[idx]?.classList.add('active');
+  if(name==='lista') renderLista();
+  if(name==='stats') renderStats();
+  if(name==='usuarios') cargarUsuarios();
+}
+
+// ─── LISTA ───────────────────────────────────────────────
+function limpiarFiltros(){
+  ['filtro-quincena','filtro-mes'].forEach(id=>document.getElementById(id).value='');
+  ['filtro-imputado','filtro-nro','filtro-fecha','filtro-obs'].forEach(id=>document.getElementById(id).value='');
+  renderLista();
+}
+
+function renderLista(){
+  const fQ=(document.getElementById('filtro-quincena').value||'').toLowerCase();
+  const fM=(document.getElementById('filtro-mes').value||'').toLowerCase();
+  const fI=(document.getElementById('filtro-imputado').value||'').toLowerCase().trim();
+  const fN=(document.getElementById('filtro-nro').value||'').toLowerCase().trim();
+  const fF=(document.getElementById('filtro-fecha').value||'').toLowerCase().trim();
+  const fO=(document.getElementById('filtro-obs').value||'').toLowerCase().trim();
+  let data=getData();
+  if(fQ) data=data.filter(o=>(o.quincena||'').toLowerCase()===fQ);
+  if(fM) data=data.filter(o=>(o.mes||'').toLowerCase()===fM);
+  if(fI) data=data.filter(o=>(o.imputado||'').toLowerCase().includes(fI));
+  if(fN) data=data.filter(o=>(o.nro||'').toLowerCase().includes(fN));
+  if(fF) data=data.filter(o=>(o.fechas||'').toLowerCase().includes(fF)||(o.foto||'').toLowerCase().includes(fF)||(o.entrega||'').toLowerCase().includes(fF));
+  if(fO) data=data.filter(o=>(o.obs||'').toLowerCase().includes(fO));
+  document.getElementById('results-count').textContent=data.length===0?'Sin resultados':data.length+' orden'+(data.length!==1?'es':'');
+  const cont=document.getElementById('lista-container');
+  if(data.length===0){ cont.innerHTML='<div class="empty"><span class="ico">📭</span><p>No hay órdenes que coincidan</p></div>'; return; }
+  cont.innerHTML=data.map(o=>{
+    const tieneFoto=!!(o.foto&&o.foto.trim());
+    const tieneEntrega=!!(o.entrega&&o.entrega.trim());
+    let clase='orden-card';
+    if(tieneEntrega) clase+=' entregada';
+    else if(tieneFoto) clase+=' con-foto';
+    return `<div class="${clase}" onclick="verDetalle(${o.id})">
+      <div class="orden-top"><span class="orden-nro">Orden #${o.nro}</span><span class="badge">${o.mes}${o.quincena?' · '+o.quincena:''}</span></div>
+      ${o.imputado?`<div class="orden-imputado">${o.imputado}</div>`:''}
+      <div class="orden-meta">${o.fechas?'📅 '+o.fechas:''}</div>
+      ${tieneFoto?`<span class="foto-badge">📸 Foto: ${o.foto}</span>`:''}
+      ${tieneEntrega?`<span class="entrega-badge">📦 Entregada: ${o.entrega}</span>`:''}
+      ${o.obs?`<div class="orden-obs">${o.obs.substring(0,70)}${o.obs.length>70?'…':''}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ─── DETALLE ─────────────────────────────────────────────
+function verDetalle(id){
+  const o=getData().find(x=>x.id===id); if(!o) return;
+  document.getElementById('modal-titulo').textContent='Orden #'+o.nro;
+  const campos=[
+    ['Fecha registro',o.fecha_registro],['Mes',o.mes],['Quincena',o.quincena],
+    ['Fechas',o.fechas],['Imputado',o.imputado],['Observaciones',o.obs],
+    ['Foto enviada',o.foto],['Fecha de entrega',o.entrega],
+  ];
+  let html=campos.filter(([,v])=>v).map(([l,v])=>
+    `<div class="detail-row"><span class="detail-label">${l}</span><span class="detail-value">${v}</span></div>`
+  ).join('');
+  if(esAdmin){
+    html+=`<button class="btn-edit" onclick="abrirEditar(${id})">✏️ Editar</button>`;
+    html+=`<button class="btn-delete" onclick="eliminarOrden(${id})">🗑 Eliminar</button>`;
+  }
+  document.getElementById('modal-body').innerHTML=html;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function handleOverlayClick(e){ if(e.target===document.getElementById('modal-overlay')) cerrarModal(); }
+function cerrarModal(){ document.getElementById('modal-overlay').classList.remove('open'); }
+
+// ─── NUEVA ORDEN (admin) ─────────────────────────────────
+function guardarOrden(){
+  if(!esAdmin){ mostrarToast('Sin permisos','#c53030'); return; }
+  const nro=document.getElementById('f-nro').value.trim();
+  const mes=document.getElementById('f-mes').value;
+  if(!nro){ alert('El N° de orden es obligatorio.'); return; }
+  if(!mes){ alert('El Mes es obligatorio.'); return; }
+  const orden={
+    id:Date.now(), nro, mes,
+    fechas:document.getElementById('f-fechas').value.trim(),
+    quincena:document.getElementById('f-quincena').value,
+    imputado:document.getElementById('f-imputado').value.trim(),
+    obs:document.getElementById('f-obs').value.trim(),
+    foto:document.getElementById('f-foto').value.trim(),
+    entrega:document.getElementById('f-entrega').value.trim(),
+    fecha_registro:new Date().toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}),
+    _editado:false,
+  };
+  const data=getData(); data.unshift(orden); saveData(data);
+  ['f-nro','f-fechas','f-imputado','f-obs','f-foto','f-entrega'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-mes').value=''; document.getElementById('f-quincena').value='';
+  // Guardar en Sheets
+  const params=new URLSearchParams({action:'guardar',nro:orden.nro,mes:orden.mes,fechas:orden.fechas||'',quincena:orden.quincena||'',imputado:orden.imputado||'',obs:orden.obs||'',foto:orden.foto||'',entrega:orden.entrega||'',fecha_registro:orden.fecha_registro});
+  fetch(URL_GOOGLE+'?'+params.toString()).catch(()=>{});
+  mostrarToast('✅ Orden guardada'); updateHeaderCount();
+}
+
+// ─── EDITAR (admin) ──────────────────────────────────────
+function abrirEditar(id){
+  const o=getData().find(x=>x.id===id); if(!o) return;
+  cerrarModal();
+  const meses=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
+  // Abrir modal de edición
+  document.getElementById('modal-titulo').textContent='Editando #'+o.nro;
+  document.getElementById('modal-body').innerHTML=`
+    <input type="hidden" id="e-id" value="${id}">
+    <div class="field"><label>N° de orden</label><input id="e-nro" value="${o.nro}" inputmode="numeric"></div>
+    <div class="field"><label>Mes</label><select id="e-mes">${meses.map(m=>`<option${m===o.mes?' selected':''}>${m}</option>`).join('')}</select></div>
+    <div class="field"><label>Fechas a realizar</label><input id="e-fechas" value="${o.fechas||''}"></div>
+    <div class="field"><label>Quincena</label><select id="e-quincena"><option value="">—</option><option value="1ra"${o.quincena==='1ra'?' selected':''}>1ra</option><option value="2da"${o.quincena==='2da'?' selected':''}>2da</option></select></div>
+    <div class="field"><label>Imputado</label><input id="e-imputado" value="${o.imputado||''}"></div>
+    <div class="field"><label>Observaciones</label><textarea id="e-obs" style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:15px;min-height:70px;resize:vertical;font-family:inherit;outline:none;">${o.obs||''}</textarea></div>
+    <div class="field"><label>Foto enviada</label><input id="e-foto" value="${o.foto||''}"></div>
+    <div class="field"><label>Fecha de entrega</label><input id="e-entrega" value="${o.entrega||''}"></div>
+    <button class="btn-primary" onclick="guardarEdicion()" style="margin-top:8px;">💾 Guardar cambios</button>
+    <button class="btn-delete" onclick="cerrarModal()" style="border-color:#718096;color:#718096;margin-top:8px;">Cancelar</button>
+  `;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function guardarEdicion(){
+  const id=parseInt(document.getElementById('e-id').value);
+  const data=getData(); const idx=data.findIndex(o=>o.id===id); if(idx<0) return;
+  const nro=document.getElementById('e-nro').value.trim();
+  const mes=document.getElementById('e-mes').value;
+  if(!nro||!mes){ alert('N° de orden y Mes son obligatorios.'); return; }
+  data[idx]={...data[idx],nro,mes,
+    fechas:document.getElementById('e-fechas').value.trim(),
+    quincena:document.getElementById('e-quincena').value,
+    imputado:document.getElementById('e-imputado').value.trim(),
+    obs:document.getElementById('e-obs').value.trim(),
+    foto:document.getElementById('e-foto').value.trim(),
+    entrega:document.getElementById('e-entrega').value.trim(),
+    _editado:true,
+  };
+  saveData(data);
+  const o=data[idx];
+  const params=new URLSearchParams({action:'editar',nro:o.nro,mes:o.mes,fechas:o.fechas||'',quincena:o.quincena||'',imputado:o.imputado||'',obs:o.obs||'',foto:o.foto||'',entrega:o.entrega||'',fecha_registro:o.fecha_registro||''});
+  fetch(URL_GOOGLE+'?'+params.toString()).catch(()=>{});
+  cerrarModal(); renderLista(); updateHeaderCount();
+  mostrarToast('✅ Orden actualizada');
+}
+
+// ─── ELIMINAR (admin) ────────────────────────────────────
+function eliminarOrden(id){
+  const orden=getData().find(o=>o.id===id); if(!orden) return;
+  if(!confirm('¿Eliminar orden #'+orden.nro+' ('+orden.mes+' '+orden.quincena+')?')) return;
+  addDeleted(claveOrden(orden));
+  saveData(getData().filter(o=>o.id!==id));
+  cerrarModal(); renderLista(); updateHeaderCount();
+  fetch(URL_GOOGLE+'?action=eliminar&nro='+encodeURIComponent(orden.nro)+'&mes='+encodeURIComponent(orden.mes)+'&quincena='+encodeURIComponent(orden.quincena))
+    .then(r=>r.json()).then(res=>mostrarToast(res.ok?'🗑 Eliminada':'⚠️ Eliminada del celu solo',res.ok?'#1d9e75':'#d97706'))
+    .catch(()=>mostrarToast('⚠️ Sin conexión','#d97706'));
+}
+
+// ─── STATS ───────────────────────────────────────────────
+function renderStats(){
+  const data=getData(); const total=data.length;
+  const conFoto=data.filter(o=>o.foto&&o.foto.trim()).length;
+  const conEntrega=data.filter(o=>o.entrega&&o.entrega.trim()).length;
+  document.getElementById('stats-grid').innerHTML=`
+    <div class="stat-box"><div class="stat-label">Total órdenes</div><div class="stat-val">${total}</div></div>
+    <div class="stat-box"><div class="stat-label">Foto enviada</div><div class="stat-val" style="color:#1d9e75">${conFoto}</div></div>
+    <div class="stat-box"><div class="stat-label">Entregadas</div><div class="stat-val" style="color:#3b82f6">${conEntrega}</div></div>
+    <div class="stat-box"><div class="stat-label">Pendientes</div><div class="stat-val" style="color:#718096">${total-conFoto}</div></div>`;
+  const porMes={};
+  data.forEach(o=>{ porMes[o.mes]=(porMes[o.mes]||0)+1; });
+  const orden=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
+  const sorted=Object.entries(porMes).sort((a,b)=>orden.indexOf(a[0])-orden.indexOf(b[0]));
+  const max=sorted.length?Math.max(...sorted.map(([,c])=>c)):1;
+  document.getElementById('stats-meses').innerHTML=sorted.length===0
+    ?'<p style="color:#a0aec0;text-align:center;padding:20px">Sin datos</p>'
+    :sorted.map(([mes,cant])=>`
+      <div class="mes-bar">
+        <span class="mes-nombre">${mes}</span>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(cant/max*100)}%"></div></div>
+        <span class="bar-count">${cant}</span>
+      </div>`).join('');
+}
+
+// ─── USUARIOS (admin) ────────────────────────────────────
+function generarCodigo(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return Array.from({length:8},()=>chars[Math.floor(Math.random()*chars.length)]).join('');
+}
+
+async function agregarUsuario(){
+  const email=document.getElementById('u-email').value.trim().toLowerCase();
+  const nombre=document.getElementById('u-nombre').value.trim();
+  if(!email||!nombre){ alert('Completá correo y nombre.'); return; }
+  const codigo=generarCodigo();
+  const vence=new Date(); vence.setDate(vence.getDate()+30);
+  const venceStr=vence.toLocaleDateString('es-AR');
+  try{
+    const params=new URLSearchParams({action:'agregarUsuario',email,nombre,codigo,vence:vence.toISOString()});
+    const r=await fetch(URL_GOOGLE+'?'+params.toString());
+    const res=await r.json();
+    if(res.ok){
+      document.getElementById('u-email').value='';
+      document.getElementById('u-nombre').value='';
+      mostrarToast('✅ Usuario agregado');
+      // Abrir WhatsApp con el código
+      const msg=`Hola ${nombre}! Tu acceso al sistema de Gestión de Órdenes:\nCorreo: ${email}\nCódigo: ${codigo}\nVence: ${venceStr}\nLink: ${location.href}`;
+      window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+      cargarUsuarios();
+    }
+  } catch(e){ mostrarToast('❌ Error al guardar','#c53030'); }
+}
+
+async function cargarUsuarios(){
+  try{
+    const r=await fetch(URL_GOOGLE+'?action=usuarios');
+    const usuarios=await r.json();
+    const cont=document.getElementById('lista-usuarios');
+    if(!Array.isArray(usuarios)||usuarios.length===0){ cont.innerHTML='<p style="color:#a0aec0;text-align:center;padding:20px">Sin usuarios registrados</p>'; return; }
+    const hoy=new Date();
+    cont.innerHTML=usuarios.map(u=>{
+      const vence=new Date(u.vence);
+      const activo=u.activo!=='false'&&u.activo!==false;
+      const vencido=vence<hoy;
+      let estado='activo'; let claseCard='usuario-card';
+      if(!activo){ estado='inactivo'; claseCard+=' inactivo'; }
+      else if(vencido){ estado='vencido'; claseCard+=' vencido'; }
+      return `<div class="${claseCard}">
+        <div class="usuario-top">
+          <span class="usuario-email">${u.nombre||u.email}</span>
+          <span class="usuario-estado estado-${estado}">${estado.toUpperCase()}</span>
+        </div>
+        <div class="usuario-info">${u.email} · Vence: ${new Date(u.vence).toLocaleDateString('es-AR')}</div>
+        <div class="usuario-codigo">Código: ${u.codigo}</div>
+        <div style="margin-top:8px;">
+          <button class="btn-renovar" onclick="renovarUsuario('${u.email}')">🔄 Renovar 30 días</button>
+          <button class="btn-baja" onclick="darDeBaja('${u.email}')">${activo?'🚫 Dar de baja':'✅ Habilitar'}</button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e){ console.error(e); }
+}
+
+async function renovarUsuario(email){
+  const codigo=generarCodigo();
+  const vence=new Date(); vence.setDate(vence.getDate()+30);
+  try{
+    const params=new URLSearchParams({action:'renovarUsuario',email,codigo,vence:vence.toISOString()});
+    const r=await fetch(URL_GOOGLE+'?'+params.toString());
+    const res=await r.json();
+    if(res.ok){ mostrarToast('✅ Renovado'); cargarUsuarios(); }
+  } catch(e){ mostrarToast('❌ Error','#c53030'); }
+}
+
+async function darDeBaja(email){
+  try{
+    const params=new URLSearchParams({action:'toggleUsuario',email});
+    const r=await fetch(URL_GOOGLE+'?'+params.toString());
+    const res=await r.json();
+    if(res.ok){ mostrarToast('✅ Actualizado'); cargarUsuarios(); }
+  } catch(e){ mostrarToast('❌ Error','#c53030'); }
+}
+</script>
+</body>
+</html>
